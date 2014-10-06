@@ -3,8 +3,9 @@ renders mandelbrot set.
 '''
 
 import PIL.Image
+from multiprocessing import Pool
 
-def in_set(C):
+def in_set(((x,y), C)):
     '''
     Tests whether complex number 'C' is in the set. 
     returns number of iterations before escape. If C is in set,
@@ -13,9 +14,9 @@ def in_set(C):
     Z = 0
     for iteration in range(1, 600):
         if abs(Z) > 2:
-            return iteration
+            return (x, y), iteration
         Z = Z ** 2 + C
-    return 600
+    return (x, y), 600
 
 def get_complex(x, y, width, height):
     '''
@@ -40,11 +41,19 @@ def render(width, height):
     given width and height of image, returns an image of mandelbrot set.
     '''
     mandel = PIL.Image.new('HSV', (width, height))
+    # for each grid coordinate create tuple in form ((x,y), C)
+    # and append to list 'l' for input into pool.map()
+    coord_complex_pairs = [] 
     for y in range(height):
         for x in range(width):
             C = get_complex(x, y, width, height)
-            color = get_color(in_set(C))
-            mandel.putpixel((x,y), color)
+            coord_complex_pairs.append(((x,y), C))
+    pool = Pool()
+    #create dictionary in form (x,y): number of iterations before escape
+    results = dict(pool.map(in_set, coord_complex_pairs))     
+    for x,y in results:
+        color = get_color(results[x,y])
+        mandel.putpixel((x, y), color)
     mandel.show()
     
-render(1200,800)
+render(2400,1600)
