@@ -5,30 +5,28 @@ Mandelbrot rendering for HackerSchool
 
 Tansy Arron, learning math things and playing with GitHub
 
-Mandelbrot renders a mandelbrot set as an image using Pillow. 
-
-
-
+==========
 
 Things I learned creating this project:
 
-Mirrors make great white boards.
+* Mirrors make great white boards.
 
-How to set up and use multiprocessor worker pools 
+* How to set up and use multiprocessor worker pools 
 
-Mandelbrot math Z = Z**2 + C
+* Mandelbrot math Z = Z**2 + C
 
-Converting (x,y) grid coordinates into complex numbers 
+* Converting (x,y) grid coordinates into complex numbers 
 
-How to use pillow to render images
+* How to use pillow to render images
 
-How to use both RGBa and HSV color
+* How to use both RGBa and HSV color
 
-How to create and use a virtual environment
+* How to create and use a virtual environment
 
-Command Line Interface - the up key and the tab key are my new best friends.
+* Command Line Interface 
+   - the up key and the tab key are my new best friends.
 
-   printing the run time of a program using time.
+   - printing the run time of a program using time.
 
-   git diff, git add, git commit, git push. 
+   - git diff, git add, git commit, git push. 
    
