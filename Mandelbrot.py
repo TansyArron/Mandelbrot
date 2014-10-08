@@ -1,37 +1,42 @@
 '''
-renders mandelbrot set.
+Renders mandelbrot visualization to image using PIL.
 '''
 
 import PIL.Image
 from multiprocessing import Pool
 
-def in_set(((x,y), C)):
+ITERATIONS = 600
+
+def escape_value(((x,y), C)):
     '''
     Tests whether complex number 'C' is in the set. 
-    returns number of iterations before escape. If C is in set,
-    returns 600.
+    Returns grid coordinates and number of iterations before escape. If C is in set,
+    returns grid coordinates and global variable ITERATIONS.
     '''
     Z = 0
-    for iteration in range(1, 600):
+    num_iterations = 0
+    while num_iterations < ITERATIONS:
         if abs(Z) > 2:
-            return (x, y), iteration
+            break
         Z = Z ** 2 + C
-    return (x, y), 600
+        num_iterations += 1
+    return (x, y), num_iterations
 
 def get_complex(x, y, width, height):
     '''
-    translates graph coordinates (x,y) in image size (width, height)
+    Translates graph coordinates (x,y) in image size (width, height)
     to complex number. Returns complex number.
     '''
     return complex(-2 + 3.0/width * x, 1 - 2.0/height * y)
 
-def get_color(num):
+def get_color(num_iterations):
     '''
-    takes number and returns an HSV color. if number is greater 
-    than 600, returns black
+    takes number of iterations before escape and returns an HSV color. 
+    if number is greater than 600, returns black
     '''
-    if num < 600:
-        hsv = num  % (360 / 6)
+    if num_iterations < 600:
+        # Cycle through hue wheel multiple times to create narrower bands of color
+        hsv = num_iterations  % (360 / 6)
         return (int(hsv * 6), 360, 360)
     else:
         return (0, 0, 0)
@@ -41,7 +46,7 @@ def render(width, height):
     given width and height of image, returns an image of mandelbrot set.
     '''
     mandel = PIL.Image.new('HSV', (width, height))
-    # for each grid coordinate create tuple in form ((x,y), C)
+    # For each grid coordinate create tuple in form ((x,y), C)
     # and append to list 'l' for input into pool.map()
     coord_complex_pairs = [] 
     for y in range(height):
@@ -49,8 +54,8 @@ def render(width, height):
             C = get_complex(x, y, width, height)
             coord_complex_pairs.append(((x,y), C))
     pool = Pool()
-    #create dictionary in form (x,y): number of iterations before escape
-    results = dict(pool.map(in_set, coord_complex_pairs))     
+    # Create dictionary in form (x,y): number of iterations before escape
+    results = dict(pool.map(escape_value, coord_complex_pairs))     
     for x,y in results:
         color = get_color(results[x,y])
         mandel.putpixel((x, y), color)
