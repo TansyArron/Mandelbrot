@@ -7,6 +7,7 @@ from multiprocessing import Pool
 
 ITERATIONS = 600
 
+
 def escape_value(((x,y), C)):
     '''
     Tests whether complex number 'C' is in the set. 
@@ -22,12 +23,12 @@ def escape_value(((x,y), C)):
         num_iterations += 1
     return (x, y), num_iterations
 
-def get_complex(x, y, width, height):
-    '''
-    Translates graph coordinates (x,y) in image size (width, height)
-    to complex number. Returns complex number.
-    '''
-    return complex(-2 + 3.0/width * x, 1 - 2.0/height * y)
+def pixel_coordinate_to_complex(x, y, width, height, top_left = (-2, 1), complex_width = 3.0, complex_height = 2.0):
+        '''
+        Translates graph coordinates (x,y) in image size (width, height)
+        to complex number. Returns complex number.
+        '''
+        return complex(top_left[0] + complex_width/width * x, top_left[1] - complex_height/height * y)   
 
 def get_color(num_iterations):
     '''
@@ -41,7 +42,7 @@ def get_color(num_iterations):
     else:
         return (0, 0, 0)
 
-def render(width, height):
+def render(width, height, top_left = (-2, 1), complex_width = 3.0, complex_height = 2.0):
     '''
     given width and height of image, returns an image of mandelbrot set.
     '''
@@ -51,7 +52,7 @@ def render(width, height):
     coord_complex_pairs = [] 
     for y in range(height):
         for x in range(width):
-            C = get_complex(x, y, width, height)
+            C = pixel_coordinate_to_complex(x, y, width, height, top_left, complex_width, complex_height)
             coord_complex_pairs.append(((x,y), C))
     pool = Pool()
     # Create dictionary in form (x,y): number of iterations before escape
@@ -61,4 +62,4 @@ def render(width, height):
         mandel.putpixel((x, y), color)
     mandel.show()
     
-render(2400,1600)
+render(960, 640, (-0.8, 0.5), 0.25, 0.11)
